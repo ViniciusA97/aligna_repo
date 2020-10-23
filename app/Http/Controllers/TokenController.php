@@ -23,7 +23,7 @@ class TokenController extends Controller
                 return response()->json(['error'=>'Credenciais erradas.']);
             }
         }catch(\Exception $e){
-            return response()->json(['error'=>'Usuário não encontrado'],404);
+            return response()->json(['error'=>$e->getMessage()],404);
         }
         // $client_data = Client::where('password_client',1)->where('revoked','!=',1)->first();
         // $data = [

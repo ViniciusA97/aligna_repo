@@ -33,17 +33,17 @@ function Home(){
 
     return(
         <>
-            <form onSubmit={handleLogin} onReset={handleLogin} on>
+            {/* <form onSubmit={handleLogin} onReset={handleLogin} on>
                 <label>
                     Email:
                     <input type="text" value={email} onChange={(e)=>{setEmail(e.target.value)}} />
                 </label>
                 <label>
                     Senha:
-                    <input type="text" value={password} onChange={(e)=>{setPassword(e.target.value)}} />
+                    <input type="password" value={password} onChange={(e)=>{setPassword(e.target.value)}} />
                 </label>
                 <input type="reset" value="Enviar" />
-            </form>
+            </form> */}
         </>
     );
 }

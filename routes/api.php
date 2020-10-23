@@ -29,6 +29,9 @@ Route::prefix('pop')->group(function () {
     Route::delete('/{id}', 'ApiPopControll@destroy');
     Route::post('', 'ApiPopControll@store');
 
+    Route::get('/historic/{id}', 'ApiPopHistoricController@index');
+    Route::get('/historic/list/{id}', 'ApiPopHistoricController@list');
+
     Route::get('/edit/{id}', 'ApiPopControll@edit');
     Route::get('/data_create', 'ApiPopControll@create');
     

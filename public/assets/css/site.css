@@ -35,10 +35,9 @@
         flex: 1 1 100%; } }
 
 html, body {
-  height: 100%; }
-
-body {
-  padding-top: 66.01px; }
+  height: 100%; 
+  padding: 0 !important;
+}
 
 .site-menubar {
   position: fixed;

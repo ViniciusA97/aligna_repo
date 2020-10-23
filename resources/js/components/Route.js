@@ -2,10 +2,13 @@ import React, {useState, useEffect} from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
 
-import {Switch, Route, BrowserRouter, Redirect} from 'react-router-dom';
-
 import Login from './Login';
 import PopList from './PopList';
+
+
+
+
+
 
 class RouteHome extends React.Component{
 
@@ -17,12 +20,13 @@ class RouteHome extends React.Component{
         }
     }
 
+   
     async componentDidMount(){
         console.log('Init DidMount');
         const urlValidate = laroute.route('validate');    
         const token = JSON.parse(localStorage.getItem('@aligna/token'));
         console.log(urlValidate);
-        console.log(token);
+        alert.log(token);
         const x  = await Axios.post(urlValidate,{},{headers:{'Authorization': `Bearer ${token}`}}
         ).then((response)=>{
             console.log(response);
@@ -37,9 +41,7 @@ class RouteHome extends React.Component{
         const { Comp, isValid } = this.state;
         console.log(Comp);
         return (
-            <>
-                <Comp/>
-            </>
+            <Comp></Comp>
         );
     }
 

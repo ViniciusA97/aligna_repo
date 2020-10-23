@@ -1,25 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import Axios from 'axios';
+import { Link } from 'react-router-dom'
+
+import { Title, Form, Input, Submit, Logo } from './styles'
 
 import Modal from 'react-modal';
 
-
-import Header from './structs/header';
-import Footer from './structs/footer';
-import NavSideBar from './structs/navSideBar';
-
 Modal.setAppElement('#app-body')
-const modalStyles = {
-    overlay: {
-        zIndex: 9995,
-        backgroundColor: 'rgba(0, 0, 0, 0.5)'
-    },
-    content : {
-      border: 0,
-      backgroundColor: 'transparent'
-    }
-};
 
  function Login(){
     const [email, setEmail] = useState('');
@@ -56,6 +44,7 @@ const modalStyles = {
             "password":password
         });
         console.log(body);
+        console.log(url);
         Axios.post(url, body, {headers:{'Content-Type': 'application/json'}}
         ).then((response)=>{
             console.log(response);
@@ -69,19 +58,52 @@ const modalStyles = {
     
 
     return(
-        <>
-            <form onSubmit={handleLogin} onReset={handleLogin} on>
-                <label>
-                    Email:
-                    <input type="text" value={email} onChange={(e)=>{setEmail(e.target.value)}} />
-                </label>
-                <label>
-                    Senha:
-                    <input type="text" value={password} onChange={(e)=>{setPassword(e.target.value)}} />
-                </label>
-                <input type="reset" value="Enviar" />
-            </form>
-        </>
+        <div className="row m-0">
+            <Logo className="col-md-8">
+                <div className="centralizar">
+                     <img src="/assets/images/logo.png" alt="..."/>
+                     <p className="logo-marca"> A melhor forma de organizar <br/> e gerir procedimentos. </p>
+                </div>
+            </Logo>
+            <div className="col-md-4">
+                <Form className="row flex-column" 
+                      onSubmit={handleLogin} 
+                      onReset={handleLogin} on>
+                    
+                    <Title>
+                         Iniciar sessão em <span> Salema </span>
+                    </Title>
+
+                    <p>
+                        Insira seus dados de acesso para continuar:
+                    </p>
+
+                    <Input type="text" 
+                           value={email} 
+                           onChange={(e)=>{setEmail(e.target.value)}}  
+                           placeholder="Email:" 
+                           className="formStyle"/>
+                    
+                    <Input type="password" 
+                           value={password} 
+                           onChange={(e)=>{setPassword(e.target.value)}} 
+                           placeholder="Senha:"
+                           className="formStyle" />
+
+                    <div className="row flex-row justify-content-between pd-5">
+                        <div class="form-check">
+                            <input type="checkbox" className="form-check-input" id="exampleCheck1" />
+                            <label class="form-check-label" for="exampleCheck1">Manter-me conectado</label>
+                        </div>
+                       
+                       <a>
+                            Esqueceu a senha? 
+                       </a>
+                    </div>
+                    <Submit type="reset" value="Enviar" />
+                </Form>
+            </div>
+        </div>
     );
 }
 

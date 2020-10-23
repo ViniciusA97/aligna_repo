@@ -32,7 +32,6 @@ class UploadController extends Controller
             $website   = \Hyn\Tenancy\Facades\TenancyFacade::website();
             $directory_url = 'tenancy/tenants/'.$website->uuid.'/media';
             $files = $request->file('files');
-
             foreach($files as $file) {
 
                 if($file->getSize() > 2000005){

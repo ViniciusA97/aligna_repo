@@ -26,11 +26,13 @@
     },
     "dependencies": {
         "ajax": "0.0.4",
+        "npm-watch": "^0.7.0",
         "react-datepicker": "^2.10.1",
         "react-router-dom": "^5.2.0",
         "react-select": "^3.0.8",
         "react-sliding-pane": "^4.0.1",
         "react-sliding-side-panel": "^1.1.8",
-        "react-tooltip": "^4.0.3"
+        "react-tooltip": "^4.0.3",
+        "styled-components": "^5.2.0"
     }
 }

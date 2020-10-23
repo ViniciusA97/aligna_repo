@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\UploadController;
 
 use App\Recurrence;
 use App\Pop;
@@ -468,6 +469,9 @@ class ApiPopControll extends Controller
                 Upload::whereIn('id', $uploads_ids)
                 ->update(['pop_id' => $pop->id]);
             }
+            $request->request->add(['pop_id'=>$pop->id]);
+            $response = new UploadController();
+            $response->store($request);
         } catch(\Exception $e) {
             if(isset($recurrence)) {
                 $recurrence->delete();

@@ -553,7 +553,7 @@ class PopController extends Controller
                 'process' => Process::all()
             ]
         );
-        return response()->json($data_view);
+        return view('pop.edit', $data_view);
     }
 
     public function update(Request $request, $id)

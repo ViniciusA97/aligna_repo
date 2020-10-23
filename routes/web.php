@@ -14,14 +14,14 @@
 Route::get('/tenancy/new', 'Teste@online');
 Route::get('/config', 'Teste@configOauth');
 Route::get('/', 'LoginController@index')->name('default');
-Route::get('/login','LoginController@index');
+// Route::get('/login','LoginController@index');
 
 Route::post('/teste','PopController@teste');
 Route::get('/pops', 'PopController@index')->name('pop.index');// ok
 Route::get('/pops/list', 'PopController@list')->name('pop.list');//ok
 Route::prefix('pop')->group(function () {
     Route::get('create', 'PopController@create')->name('pop.create'); //ok
-    Route::post('', 'PopController@store')->name('pop.store');
+    Route::post('', 'PopController@store')->name('pop.store'); //ok
 
     Route::get('selects', 'PopController@selects')->name('pop.selects');//ok
     Route::get('edit/{id}', 'PopController@edit')->name('pop.edit');//ok
