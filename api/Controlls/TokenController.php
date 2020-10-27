@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace Api\Controlls;
 
 use Illuminate\Http\Request;
 use \Validator;
 use Laravel\Passport\Client;
 use GuzzleHttp\Client as http;
 use App\User;
+use App\Http\Controllers\Controller;
 
 class TokenController extends Controller
 {

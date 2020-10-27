@@ -45,6 +45,16 @@ class User extends Authenticatable
         return $this->hasMany('App\Pop', 'id', 'user_creator_id');
     }
 
+    public function setor()
+    {
+        return $this->belongsTo('App\Setor', 'id', 'id_setor');
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo('App\Cargo', 'id', 'id_cargo');
+    }
+
     public function popVersions()
     {
         return $this->hasMany('App\PopHistoric', 'id', 'user_creator_id');

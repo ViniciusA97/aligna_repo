@@ -22,6 +22,19 @@ Route::get('/pops', 'ApiPopControll@get');
 Route::get('/pops/list', 'ApiPopControll@list');
 Route::get('/pops/selects', 'ApiPopControll@selects');
 
+Route::prefix('cargo')->group(function () {
+    Route::get('/byid/{id}','ApiCargoControll@getById');
+    
+});
+
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::get('cargo/all','ApiCargoControll@getAll');
+    Route::post('cargo','ApiCargoControll@create');
+    Route::put('cargo/{id}','ApiCargoControll@update');
+    Route::delete('cargo/{id}','ApiCargoControll@delete');
+});
+
+
 Route::prefix('pop')->group(function () {
     //CRUD
     Route::get('/byid/{id}', 'ApiPopControll@show');
