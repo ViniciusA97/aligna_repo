@@ -10,6 +10,9 @@ class Setor extends Model
 {
     use UsesTenantConnection;
 
+    protected $table="setor";
+    public $timestamps = false;
+
     protected $fillable = [
         'name', 'descricao', 'active'
     ];

@@ -7,72 +7,98 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Mail;
+use \Validator;
 
 class ApiSetorControll extends Controller
 {
 
-    public function create(Request $request, $id)
+    public function create(Request $request)
     {
+        try{
+            $check_auth = $this->checkAutentication($request);
+            if(!$check_auth['auth']){
+                return $check_auth['response'];
+            }else{
+                //if($user->role != null){
+                    //return response()->json(['success'=>false,'error'=>'Escopo de usuário não permite realizar esta ação.'],401);
+                //}
+            }
+
+            $validate = Validator::make(
+                $request->all(),
+                [
+                    'name'=>'required' ,
+                    'descricao'=>'required'
+            ]);
+            if($validate->fails()){ 
+                return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
+            }
+            $cargo = Setor::create($request->all());
+
+            return response()->json(['success'=>true,'data'=>$cargo],201);
+        }catch(Exception $e){
+            return response()->json(['success'=>false],500);
+        }
+    }
+
+    public function getAll(Request $request){
+        $check_auth = $this->checkAutentication($request);
+            if(!$check_auth['auth']){
+                return $check_auth['response'];
+            }
+        try{
+            $all_data = Setor::where('active',1)->get();
+            return response()->json(['success'=>true,'data'=>$all_data],200);
+        }catch(Exception $e){
+            return response()->json(['Error'=>$e->getMessage()],500);
+        }
+    }
+
+    public function getById($id)
+    {
+        try{
+            $cargo = Setor::find($id);
+            if(is_null($cargo)) return response()->json(['error'=>'Cargo com id '.$id.' não encontrado'],404);
+            return response()->json(['success'=>true, 'data'=>$cargo],200);
+        }catch(Exception $e){
+            return response()->json(['success'=>false, 'error'=>$e->getMessage()],500);
+        }
+    }
+
+    public function update(Request $request,$id)
+    {
+        $check_auth = $this->checkAutentication($request);
+        if(!$check_auth['auth']){
+            return $check_auth['response'];
+        }
+        $cargo = Setor::find($id);
+        if(is_null($cargo)) return response()->json(['error'=>'Cargo com id '.$id.' não encontrado'],404);
+        $cargo->update($request->all());
+        return response()->json(['success'=>true, 'data'=>$cargo],200);
+    }
+
+    public function delete(Request $request , $id)
+    {
+        $check_auth = $this->checkAutentication($request);
+        if(!$check_auth['auth']){
+            return $check_auth['response'];
+        }
+        try{
+            $cargo = Setor::find($id);
+            if(is_null($cargo)) return response()->json(['error'=>'Cargo com id '.$id.' não encontrado'],404);
+            $cargo->delete();
+            return response()->json(['success'=>true]);
+        }catch(Exception $e){
+            return response()->json(['success'=>false],500);
+        }
+    }
+
+    public function checkAutentication($request){
         $user = $request->user();
         if(is_null($user)){
-            return response()->json(['success'=>false, 'error'=>"Token invalid."],401);
+            $response = ['response'=>response()->json(['success'=>false, 'error'=>"Token invalid."],401), 'auth'=>false];
         }
-
-        $validate = Validator::make(
-            $request->all(),
-            [
-                'email'=>'required| email' ,
-                'cargo_id'=>'required',
-                'setor_id'=>'required',
-                'name' =>'required',
-                'role' =>'required'
-            ]);
-        
-        $member = User::create($request->all());
-
-        return response()->json(['data'=>$data_view]);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $pop = Pop::with('uploads')->with('functions')->with('processes')->find($id);
-        $historic = PopHistoric::where('pop_id', $id);
-
-        if($request){
-            if($request->start){
-                $start_date = explode("/", $request->start);
-                $start_date = $start_date[2].'-'.$start_date[1].'-'.$start_date[0];
-                $historic->where('updated_at', '>=' , Carbon::create($start_date));
-            }
-            if($request->end){
-                $end_date = explode("/", $request->end);
-                $end_date = $end_date[2].'-'.$end_date[1].'-'.$end_date[0];
-                $historic->where('updated_at', '<=' , Carbon::create($end_date));
-            }
-        }
-
-        $data = array(
-            'pop' => $pop,
-            'current_version' => $pop->active_version_id,
-            'historic' => $historic->with('recurrence')->with('createdBy')->orderBy('updated_at','desc')->paginate(5)
-        );
-
-        return response()->json($data, 200);
-    }
-
-    public function delete()
-    {
-        //
-    }
-
-    public function getAll(Request $request)
-    {
-        //
-    }
-
-    public function getById(Pop_historic $pop_historic)
-    {
-        //
+        return ['auth'=>true];
     }
 
     public function sendMail() {

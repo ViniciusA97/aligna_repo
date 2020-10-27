@@ -49,7 +49,7 @@ class ApiCargoControll extends Controller
                 return $check_auth['response'];
             }
         try{
-            $all_data = Cargo::all();
+            $all_data = Cargo::where('active',1)->get();
             return response()->json(['success'=>true,'data'=>$all_data],200);
         }catch(Exception $e){
             return response()->json(['Error'=>$e->getMessage()],500);

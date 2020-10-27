@@ -28,10 +28,20 @@ Route::prefix('cargo')->group(function () {
 });
 
 Route::group(['middleware' => ['auth:api']], function () {
+    
     Route::get('cargo/all','ApiCargoControll@getAll');
     Route::post('cargo','ApiCargoControll@create');
     Route::put('cargo/{id}','ApiCargoControll@update');
     Route::delete('cargo/{id}','ApiCargoControll@delete');
+    Route::get('cargo/{id}','ApiCargoControll@getById');
+
+    Route::get('setor/all','ApiSetorControll@getAll');
+    Route::post('setor','ApiSetorControll@create');
+    Route::put('setor/{id}','ApiSetorControll@update');
+    Route::delete('setor/{id}','ApiSetorControll@delete');
+    Route::get('setor/{id}','ApiSetorControll@getById');
+    
+
 });
 
 
