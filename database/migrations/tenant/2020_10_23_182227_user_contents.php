@@ -14,19 +14,20 @@ class UserContents extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->enum('role', ['Colaborador', 'Supervisor', 'Administrador', 'Inativo'])->nullable();
+            $table->enum('role', ['Colaborador', 'Supervisor', 'Administrador', 'Inativo']);
             $table->string('foto_perfil')->nullable();
             $table->timestamp('data_nascumento')->nullable();
             $table->string('url_linkedin')->nullable();
             $table->text('resumo_experiencia')->nullable();
             $table->boolean('active')->default(1);
+            $table->unsignedBigInteger('id_setor')->nullable();
+            $table->foreign('id_setor')->references('id')->on('setor')->onDelete('set null');
+            $table->unsignedBigInteger('id_cargo')->nullable();
+            $table->foreign('id_cargo')->references('id')->on('cargo')->onDelete('set null');
             $table->timestamp('send_last_invite')->nullable();
             $table->timestamp('last_access')->nullable();
-            $table->bigInteger('id_setor')->unsigned()->nullable();
-            $table->bigInteger('id_cargo')->unsigned()->nullable();
-            $table->foreign('id_setor')->references('id')->on('setor');
-            $table->foreign('id_cargo')->references('id')->on('cargo');
         });
+        Schema::enableForeignKeyConstraints();
     }
 
     /**

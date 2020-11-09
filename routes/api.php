@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Http\Request;
+use App\Http\Middleware\CheckScope;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -23,27 +25,41 @@ Route::get('/pops/list', 'ApiPopControll@list');
 Route::get('/pops/selects', 'ApiPopControll@selects');
 
 Route::prefix('cargo')->group(function () {
-    Route::get('/byid/{id}','ApiCargoControll@getById');
-    
+    Route::get('/byid/{id}','ApiCargoControll@getById'); 
 });
+
 
 Route::group(['middleware' => ['auth:api']], function () {
     
-    Route::get('cargo/all','ApiCargoControll@getAll');
-    Route::post('cargo','ApiCargoControll@create');
-    Route::put('cargo/{id}','ApiCargoControll@update');
-    Route::delete('cargo/{id}','ApiCargoControll@delete');
-    Route::get('cargo/{id}','ApiCargoControll@getById');
+    Route::middleware([CheckScope::class])->group(function () {
+        
+        Route::post('cargo','ApiCargoControll@create');
+        Route::put('cargo/{id}','ApiCargoControll@update');
+        Route::delete('cargo/{id}','ApiCargoControll@delete');
+       
+        Route::post('setor','ApiSetorControll@create');
+        Route::put('setor/{id}','ApiSetorControll@update');
+        Route::delete('setor/{id}','ApiSetorControll@delete');
 
+        Route::post('member/accessible','ApiUserControll@createWithEmail');
+        Route::post('member/not-accessible','ApiUserControll@createWithOutEmail');
+
+        Route::delete('member/{id}','ApiUserControll@delete');
+
+    });
+
+    
+    Route::get('cargo/all','ApiCargoControll@getAll');
+    Route::get('cargo/{id}','ApiCargoControll@getById');
+    
     Route::get('setor/all','ApiSetorControll@getAll');
-    Route::post('setor','ApiSetorControll@create');
-    Route::put('setor/{id}','ApiSetorControll@update');
-    Route::delete('setor/{id}','ApiSetorControll@delete');
     Route::get('setor/{id}','ApiSetorControll@getById');
     
+    Route::get('member/{id}','ApiUserControll@getById');
 
 });
 
+Route::post('member/confirmAccount','ApiUserControll@confirmAccount');
 
 Route::prefix('pop')->group(function () {
     //CRUD

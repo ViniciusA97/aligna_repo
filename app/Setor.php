@@ -16,4 +16,10 @@ class Setor extends Model
     protected $fillable = [
         'name', 'descricao', 'active'
     ];
+
+    public function users()
+    {
+        return $this->hasMany('App\User', 'id_setor', 'id');
+    }
+
 }

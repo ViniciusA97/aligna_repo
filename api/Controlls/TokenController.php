@@ -15,7 +15,7 @@ class TokenController extends Controller
         $validate = Validator::make($request->all(), ['email'=>'required' ,'password'=>'required']);
         if($validate->fails()){ return response()->json(['error'=>'Email e senha são obrigatórios']);}
         try{
-            $user = User::where('email',$request->email)->first();
+            $user = User::where('active',1)->where('email',$request->email)->first();
             $result = password_verify($request->password,$user->password);
             if($result){
                 $token = $user->createToken('Token')->accessToken;
@@ -24,7 +24,7 @@ class TokenController extends Controller
                 return response()->json(['error'=>'Credenciais erradas.']);
             }
         }catch(\Exception $e){
-            return response()->json(['error'=>$e->getMessage()],404);
+            return response()->json(['error'=>$e->getMessage(),'friendlyMessage'=>'Usuário não encontrado'],404);
         }
         // $client_data = Client::where('password_client',1)->where('revoked','!=',1)->first();
         // $data = [

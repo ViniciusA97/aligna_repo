@@ -11,7 +11,9 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use Notifiable, UsesTenantConnection, SoftDeletes, HasApiTokens;
+    use Notifiable, UsesTenantConnection, HasApiTokens;
+
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -19,7 +21,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','email_verified_at', 'id_cargo', 'id_setor', 'last_access'
     ];
 
     /**
@@ -40,6 +42,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    
+
     public function pops()
     {
         return $this->hasMany('App\Pop', 'id', 'user_creator_id');
@@ -47,12 +51,12 @@ class User extends Authenticatable
 
     public function setor()
     {
-        return $this->belongsTo('App\Setor', 'id', 'id_setor');
+        return $this->belongsTo('App\Setor', 'id_setor');
     }
 
     public function cargo()
     {
-        return $this->belongsTo('App\Cargo', 'id', 'id_cargo');
+        return $this->belongsTo('App\Cargo', 'id_cargo');
     }
 
     public function popVersions()

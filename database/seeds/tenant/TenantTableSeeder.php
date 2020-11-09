@@ -17,6 +17,7 @@ class TenantTableSeeder extends Seeder
             'name' => 'user',
             'email' => 'user@gmail.com',
             'password' => bcrypt('password'),
+            'role'=>'Administrador'
         ]);
         DB::table('functionms')->insert([
             ['title' => 'Função 1'],
@@ -31,6 +32,15 @@ class TenantTableSeeder extends Seeder
             ['title' => 'Processo 3', 'color' => '#005533'],
             ['title' => 'Processo 4', 'color' => '#ff9922'],
             ['title' => 'Processo 5', 'color' => '#bb52f1']
+        ]);
+        DB::table('setor')->insert([
+            'name'=>'TI',
+            'descricao'=>'Apenas um seed para testes'
+        ]);
+        DB::table('cargo')->insert([
+            'name'=>'Desenvolvedor',
+            'resumo'=>'Apenas um seed para testes',
+            'descricao'=>'Apenas um seed para testes'
         ]);
     }
 }

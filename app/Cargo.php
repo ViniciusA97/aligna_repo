@@ -18,5 +18,10 @@ class Cargo extends Model
         'name', 'resumo', 'descricao', 'active'
     ];
 
+    public function users()
+    {
+        return $this->hasMany('App\User', 'id_cargo', 'id');
+    }
+
 
 }
