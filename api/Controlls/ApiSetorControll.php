@@ -75,6 +75,30 @@ class ApiSetorControll extends Controller
         }
     }
 
+    public function getAllUserById($id){
+        $setor = Setor::find($id);
+        if(empty($setor)){
+            return response()->json(
+                [
+                    'success'=>false,
+                    'error'=>'Não foi possivel encontrar um setor com esse id.',
+                    'friendlyMessage'=>'Não foi possível encontrar o setor.'
+                ],404);
+        }
+        $users = $setor->users()->get();
+
+        $response['setor']=$setor;
+        $response['setor']['users'] = $users;
+
+        return response()->json(
+            [
+                'success'=>true,
+                'data'=>$response
+            ],
+            200
+        );
+    }
+
     
 
     public function sendMail() {

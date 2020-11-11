@@ -43,19 +43,24 @@ Route::group(['middleware' => ['auth:api']], function () {
 
         Route::post('member/accessible','ApiUserControll@createWithEmail');
         Route::post('member/not-accessible','ApiUserControll@createWithOutEmail');
-
+        Route::put('member','ApiUserControll@update');
         Route::delete('member/{id}','ApiUserControll@delete');
 
-    });
+        Route::post('upload','UploadController@store');
+        Route::delete('upload/{id}','UploadController@destroy');
 
+    });
     
-    Route::get('cargo/all','ApiCargoControll@getAll');
+    Route::get('cargo','ApiCargoControll@getAll');
     Route::get('cargo/{id}','ApiCargoControll@getById');
+    Route::get('cargo/users/{id}','ApiCargoControll@getAllUserById');
     
-    Route::get('setor/all','ApiSetorControll@getAll');
+    Route::get('setor','ApiSetorControll@getAll');
     Route::get('setor/{id}','ApiSetorControll@getById');
+    Route::get('setor/users/{id}','ApiSetorControll@getAllUserById');
     
     Route::get('member/{id}','ApiUserControll@getById');
+    Route::get('/member','ApiUserControll@getAll');
 
 });
 
@@ -67,19 +72,18 @@ Route::prefix('pop')->group(function () {
     Route::put('/{id}', 'ApiPopControll@update');
     Route::delete('/{id}', 'ApiPopControll@destroy');
     Route::post('', 'ApiPopControll@store');
-
+    
     Route::get('/historic/{id}', 'ApiPopHistoricController@index');
     Route::get('/historic/list/{id}', 'ApiPopHistoricController@list');
-
+    
     Route::get('/edit/{id}', 'ApiPopControll@edit');
     Route::get('/data_create', 'ApiPopControll@create');
     
     Route::post('/duplicate/{id}', 'ApiPopControll@duplicate');
     Route::get('/pdf/{id}', 'ApiPopControll@pdf');
     Route::put('/version/{id}', 'ApiPopControll@version');
-
-    //Create.
-    // POP HISTORICS
+    
+    Route::get('upload','UploadController@all');
 });
 
 

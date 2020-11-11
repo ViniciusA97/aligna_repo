@@ -103,13 +103,28 @@ class ApiCargoControll extends Controller
         return ['auth'=>true];
     }
 
-    public function sendMail() {
-        $data = array('name'=>"Virat Gandhi");
-     
-        Mail::send(['text'=>'mail.mail'], $data, function($message) {
-           $message->to('viniqueiroz123@gmail.com', 'Teste')->subject
-              ('Laravel Basic Testing Mail');
-           $message->from('ti@stalo.com','Stalo Software Studio');
-        });
-     }
+    public function getAllUserById($id){
+        $cargo = Cargo::find($id);
+        if(empty($cargo)){
+            return response()->json(
+                [
+                    'success'=>false,
+                    'error'=>'Não foi possivel encontrar um setor com esse id.',
+                    'friendlyMessage'=>'Não foi possível encontrar o setor.'
+                ],404);
+        }
+        $users = $cargo->users()->get();
+
+        $response['setor']=$cargo;
+        $response['setor']['users'] = $users;
+
+        return response()->json(
+            [
+                'success'=>true,
+                'data'=>$response
+            ],
+            200
+        );
+    }
+
 }

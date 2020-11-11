@@ -14,6 +14,7 @@ use Api\Presenters\MailConfirmateMember;
 use Api\Events\EventMail;
 
 use \Validator;
+use Cookie;
 
 
 class ApiUserControll extends Controller{
@@ -142,11 +143,66 @@ class ApiUserControll extends Controller{
     }
 
     public function update(Request $request){
+       dd($request->all());
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'user_id'=>'required' 
+            ]
+        );
+        
+        if($validate->fails()){ 
+            return response()->json(
+                [
+                    'success'=>false,
+                    'friendlyMessage'=>'Campos requiridos faltando.',
+                    'error'=>'user não encontrado'
+                ],404);
+        }
+        
+        if(!is_null($request->foto_perfil)){
+            
+            $website   = \Hyn\Tenancy\Facades\TenancyFacade::website();
+            $directory_url = 'tenancy/tenants/'.$website->uuid.'/media';
+            
+            $file = $request->file('foto_perfil');
+            
+            $path = Storage::putFile($directory_url, $file);
+            $path_explode = explode("media/", $path);
+            $filename = $path_explode[1];
+            $originalFilename = $file->getClientOriginalName();
+            $size = Storage::size($path);
+            $mineType = $file->getClientMimeType();
+            $extension = $file->extension();
+            $external_url = route('tenant.media', ['path' => $filename]);
+
+            User::find($request->user_id)->update([
+                'foto_perfil'=>$external_url
+            ]);
+        }
 
     }
 
     public function getAll(Request $request){
+        $users = User::all();
+        $response = [];
+        foreach($users as &$user){
+            $cargo = $user->cargo()->get();
+            $setor = $user->setor()->get();
+        
+            $builder['user'] = $user;
+            $builder['user']['cargo'] = $cargo;
+            $builder['user']['setor'] = $setor;
 
+            $response[] = $builder;
+        }
+
+        return response()->json(
+            [
+                'success'=>true,
+                'data'=>$response
+            ],200
+        );
     }
 
     public function getById($id){
@@ -161,11 +217,9 @@ class ApiUserControll extends Controller{
                 ],404);
             }
             
-            $response = [
-                'user'=>$user,
-                'cargo'=>$user->cargo()->get(),
-                'setor'=>$user->setor()->get()
-            ];
+            $response['user'] = $user;
+            $response['user']['cargo'] = $user->cargo()->get();
+            $response['user']['setor'] = $user->setor()->get();
             
             return response()->json([
                 'data'=>$response,
