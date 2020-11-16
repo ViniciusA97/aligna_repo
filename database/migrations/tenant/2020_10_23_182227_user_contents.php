@@ -16,7 +16,7 @@ class UserContents extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', ['Colaborador', 'Supervisor', 'Administrador', 'Inativo']);
             $table->string('foto_perfil')->nullable();
-            $table->timestamp('data_nascumento')->nullable();
+            $table->timestamp('data_nascimento')->nullable();
             $table->string('url_linkedin')->nullable();
             $table->text('resumo_experiencia')->nullable();
             $table->boolean('active')->default(1);
