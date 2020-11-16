@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 use Api\Presenters\MailCreateUserPresenter;
 use Api\Presenters\MailConfirmateMember;
 use Api\Events\EventMail;
-
+use Illuminate\Support\Facades\Storage;
 use \Validator;
 use Cookie;
 
@@ -34,15 +34,22 @@ class ApiUserControll extends Controller{
         }
         try{
             
-            $user = User::create($request->all());
+            $data = $request->all();
+            $data['send_last_invite'] = Carbon::now();
+        
+            $user = User::create($data);
             
             $password_reset = PasswordReset::create([
                 "email"=>$request->email,
                 "token"=>Str::random(30)
             ]);
 
+            $url = $request->url();
+            $urlFinal = str_replace('/api/member/accessible','',$url);
             
-            $mail = new MailCreateUserPresenter($user->email, $password_reset->token, $user->name);
+            $link = $urlFinal.'/'.$password_reset->token;
+
+            $mail = new MailCreateUserPresenter($user->email, $link, $user->name);
             $event = new EventMail($mail);
             $event->handleEvent();
             
@@ -72,7 +79,6 @@ class ApiUserControll extends Controller{
                 'id_setor'=>'required',
                 'role'=>'required'
         ]);
-        
         if($validate->fails()){ 
             return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
         }
@@ -142,33 +148,17 @@ class ApiUserControll extends Controller{
         }
     }
 
-    public function update(Request $request){
-       dd($request->all());
-        $validate = Validator::make(
-            $request->all(),
-            [
-                'user_id'=>'required' 
-            ]
-        );
-        
-        if($validate->fails()){ 
-            return response()->json(
-                [
-                    'success'=>false,
-                    'friendlyMessage'=>'Campos requiridos faltando.',
-                    'error'=>'user não encontrado'
-                ],404);
-        }
+    public function update(Request $request, $id){
         
         if(!is_null($request->foto_perfil)){
             
             $website   = \Hyn\Tenancy\Facades\TenancyFacade::website();
-            $directory_url = 'tenancy/tenants/'.$website->uuid.'/media';
+            $directory_url = 'tenancy/tenants/'.$website->uuid.'/media/perfil';
             
             $file = $request->file('foto_perfil');
             
             $path = Storage::putFile($directory_url, $file);
-            $path_explode = explode("media/", $path);
+            $path_explode = explode("media", $path);
             $filename = $path_explode[1];
             $originalFilename = $file->getClientOriginalName();
             $size = Storage::size($path);
@@ -176,11 +166,20 @@ class ApiUserControll extends Controller{
             $extension = $file->extension();
             $external_url = route('tenant.media', ['path' => $filename]);
 
-            User::find($request->user_id)->update([
+            User::find($id)->update([
                 'foto_perfil'=>$external_url
             ]);
         }
-
+        $data = $request->all();
+        unset($data['foto_perfil']);
+        $user = User::find($id);
+        $user->update($data);
+        return response()->json(
+            [
+                'success'=>true,
+                'data'=>$user
+            ],200
+        );
     }
 
     public function getAll(Request $request){

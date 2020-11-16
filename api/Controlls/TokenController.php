@@ -21,10 +21,10 @@ class TokenController extends Controller
                 $token = $user->createToken('Token')->accessToken;
                 return response()->json(['token'=>$token, 'user'=>$user]);
             }else{
-                return response()->json(['error'=>'Credenciais erradas.']);
+                return response()->json(['error'=>'Credenciais erradas.'],401);
             }
         }catch(\Exception $e){
-            return response()->json(['error'=>$e->getMessage(),'friendlyMessage'=>'Usuário não encontrado'],404);
+            return response()->json(['error'=>$e->getMessage(),'friendlyMessage'=>'Usuário não encontrado'],401);
         }
         // $client_data = Client::where('password_client',1)->where('revoked','!=',1)->first();
         // $data = [

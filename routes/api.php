@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use App\Http\Middleware\CheckScope;
+use App\Http\Middleware\UpdateLastAsccess;
 
 
 /*
@@ -29,7 +30,7 @@ Route::prefix('cargo')->group(function () {
 });
 
 
-Route::group(['middleware' => ['auth:api']], function () {
+Route::group(['middleware' => ['auth:api',UpdateLastAsccess::class]], function () {
     
     Route::middleware([CheckScope::class])->group(function () {
         
@@ -43,7 +44,7 @@ Route::group(['middleware' => ['auth:api']], function () {
 
         Route::post('member/accessible','ApiUserControll@createWithEmail');
         Route::post('member/not-accessible','ApiUserControll@createWithOutEmail');
-        Route::put('member','ApiUserControll@update');
+        Route::post('member/{id}','ApiUserControll@update');
         Route::delete('member/{id}','ApiUserControll@delete');
 
         Route::post('upload','UploadController@store');

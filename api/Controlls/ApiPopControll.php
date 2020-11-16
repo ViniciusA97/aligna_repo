@@ -369,7 +369,7 @@ class ApiPopControll extends Controller
 
     public function store(Request $request)
     {
-        //dd($request->all());
+        dd($request);
         $validatedData = $request->validate([
             'title' => 'required|max:255',
             // 'resume' => 'required|max:200',
