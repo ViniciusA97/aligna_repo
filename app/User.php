@@ -33,7 +33,9 @@ class User extends Authenticatable
         'foto_perfil',
         'data_nascimento',
         'url_linkedin',
-        'resumo_experiencia'
+        'resumo_experiencia',
+        'formacao',
+        'telefone   '
     ];
 
     /**

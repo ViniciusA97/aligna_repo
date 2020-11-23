@@ -11,6 +11,7 @@ use Mail;
 use Illuminate\Support\Str;
 use Api\Presenters\MailCreateUserPresenter;
 use Api\Presenters\MailConfirmateMember;
+use Api\Presenters\MailForgetPassword;
 use Api\Events\EventMail;
 use Illuminate\Support\Facades\Storage;
 use \Validator;
@@ -25,12 +26,10 @@ class ApiUserControll extends Controller{
             [
                 'name'=>'required' ,
                 'email'=>'required',
-                'id_cargo'=>'required',
-                'id_setor'=>'required',
                 'role'=>'required'
         ]);
         if($validate->fails()){ 
-            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
+            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],400);
         }
         try{
             
@@ -74,13 +73,11 @@ class ApiUserControll extends Controller{
         $validate = Validator::make(
             $request->all(),
             [
-                'name'=>'required' ,
-                'id_cargo'=>'required',
-                'id_setor'=>'required',
+                'name'=>'required',
                 'role'=>'required'
         ]);
         if($validate->fails()){ 
-            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
+            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],400);
         }
 
         try{
@@ -114,7 +111,7 @@ class ApiUserControll extends Controller{
         ]);
         
         if($validate->fails()){ 
-            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
+            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],400);
         }
 
         $token = $request->token;
@@ -213,7 +210,7 @@ class ApiUserControll extends Controller{
                 return response()->json([
                     'error'=>'Usuário não encontrado.',
                     'friendlyMessage'=>'Usuário não encontrado.'
-                ],404);
+                ],400);
             }
             
             $response['user'] = $user;
@@ -228,7 +225,7 @@ class ApiUserControll extends Controller{
             return response()->json([
                 'error'=>$e->getMessage(),
                 'friendlyMessage'=>'Usuário não encontrado.'
-            ],404);
+            ],400);
         }
     }
 
@@ -241,7 +238,7 @@ class ApiUserControll extends Controller{
                 return response()->json([
                     'error'=>'Usuário não encontrado.',
                     'friendlyMessage'=>'Usuário não encontrado.'
-                ],404);
+                ],400);
             }
             $user->delete();
             
@@ -255,6 +252,84 @@ class ApiUserControll extends Controller{
                 'friendlyMessage'=>'Usuário não encontrado.'
             ],404);
         }
+    }
+
+    public function resetPassword(Request $request){
+        
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'email'=>'required'
+        ]);
+        if($validate->fails()){ 
+            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],401);
+        }
+
+        $user = User::where('email',$request->email)->get();
+
+        if(is_null($user[0])){
+            return response()->json([
+                "success"=>false,
+                'friendlyMessage'=>'Email não cadastrado.',
+                "error"=>"Não foi possível achar um usuário com este email."
+            ],400);
+        }
+
+        try{
+            $password_reset = PasswordReset::create([
+                "email"=>$request->email,
+                "token"=>Str::random(45)
+            ]);
+        }catch(Exception $e){
+            return response()->json([
+                "success"=>false,
+                "error"=>$e->getMessage(),
+                "friendlyMessage"=>"Já existe uma solicitação pendente."
+            ],400);
+        }
+
+        $url = $request->url();
+        $urlFinal = str_replace('/api/member/resetPassword','',$url);
+        $link = $urlFinal.'/reset-password/'.$password_reset->token;
+
+        $mail = new MailForgetPassword($user[0]->email, $link);
+        $event = new EventMail($mail);
+        $event->handleEvent();
+        
+        return response()->json([
+            "success"=>true,
+            "friendlyMessage"=>"Um email foi enviado para o usuário"
+        ],200);
+
+    }
+
+    public function confirmNewPassword(Request $request){
+       
+        $validate = Validator::make(
+            $request->all(),
+            [
+                'password'=>'required',
+                'token'=>'required'
+        ]);
+        
+        if($validate->fails()){ 
+            return response()->json(['success'=>false,'error'=>'Campos requiridos faltando.'],400);
+        }
+
+        $token = $request->token;
+        $password_reset = PasswordReset::where('token',$token)->first();
+        $user = User::where('email',$password_reset->email)->first();
+        $to_update = [
+            "password"=>password_hash($request->password, PASSWORD_BCRYPT)
+        ];
+        
+        $user->update($to_update);
+        $password_reset->delete();
+
+        return response()->json([
+            'success'=>true,
+            'friendlyMessage'=>'Password resetado com sucesso'
+        ],200);
     }
     
 }

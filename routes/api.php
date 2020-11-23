@@ -4,7 +4,6 @@ use Illuminate\Http\Request;
 use App\Http\Middleware\CheckScope;
 use App\Http\Middleware\UpdateLastAsccess;
 
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,21 +15,36 @@ use App\Http\Middleware\UpdateLastAsccess;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 
 Route::get('/pops', 'ApiPopControll@get');
 Route::get('/pops/list', 'ApiPopControll@list');
 Route::get('/pops/selects', 'ApiPopControll@selects');
 
+Route::post('/member/confirmAccount','ApiUserControll@confirmAccount');
+Route::post('/member/resetPassword','ApiUserControll@resetPassword');
+Route::post('/member/createPassword','ApiUserControll@confirmNewPassword');
+    
+
+Route::middleware('auth:api')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
 Route::prefix('cargo')->group(function () {
     Route::get('/byid/{id}','ApiCargoControll@getById'); 
 });
 
-
 Route::group(['middleware' => ['auth:api',UpdateLastAsccess::class]], function () {
+     
+    Route::get('cargo','ApiCargoControll@getAll');
+    Route::get('cargo/{id}','ApiCargoControll@getById');
+    Route::get('cargo/users/{id}','ApiCargoControll@getAllUserById');
+    
+    Route::get('setor','ApiSetorControll@getAll');
+    Route::get('setor/{id}','ApiSetorControll@getById');
+    Route::get('setor/users/{id}','ApiSetorControll@getAllUserById');
+    
+    Route::get('member','ApiUserControll@getAll');
+    Route::get('member/{id}','ApiUserControll@getById');
     
     Route::middleware([CheckScope::class])->group(function () {
         
@@ -51,21 +65,8 @@ Route::group(['middleware' => ['auth:api',UpdateLastAsccess::class]], function (
         Route::delete('upload/{id}','UploadController@destroy');
 
     });
-    
-    Route::get('cargo','ApiCargoControll@getAll');
-    Route::get('cargo/{id}','ApiCargoControll@getById');
-    Route::get('cargo/users/{id}','ApiCargoControll@getAllUserById');
-    
-    Route::get('setor','ApiSetorControll@getAll');
-    Route::get('setor/{id}','ApiSetorControll@getById');
-    Route::get('setor/users/{id}','ApiSetorControll@getAllUserById');
-    
-    Route::get('member/{id}','ApiUserControll@getById');
-    Route::get('/member','ApiUserControll@getAll');
 
 });
-
-Route::post('member/confirmAccount','ApiUserControll@confirmAccount');
 
 Route::prefix('pop')->group(function () {
     //CRUD
@@ -87,8 +88,6 @@ Route::prefix('pop')->group(function () {
     Route::get('upload','UploadController@all');
 });
 
-
-
 Route::post('/login','TokenController@login')->name('login');
 Route::post('/validate','TokenController@validateToken')->middleware('auth:api')->name('validate');
 Route::post('/teste',function(Request $request){
@@ -96,4 +95,3 @@ Route::post('/teste',function(Request $request){
     $urlFinal = str_replace('/api/teste','',$url);
     return response()->json(['url'=>$urlFinal]);
 });
-
